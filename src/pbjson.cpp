@@ -472,6 +472,19 @@ namespace pbjson
         {
             const char* name = itr->name.GetString();
             const FieldDescriptor *field = d->FindFieldByName(name);
+            // Add support for json-name in proto file
+            if(!field)
+            {
+                const size_t field_count = d->field_count();
+                for(size_t i =0; i< field_count ; ++i)
+                {
+                    const FieldDescriptor* tmp_field = d->field(i);
+                    if(tmp_field && tmp_field->has_json_name() && tmp_field->json_name() == name)
+                    {
+                        field = tmp_field;
+                    }
+                }
+            }
             if (!field)
                 field = ref->FindKnownExtensionByName(name);
             if (!field)
